@@ -75,6 +75,7 @@ pp.pprint(cart)
 for element in cart:
 #sumarlas a total
     total += element[4]
+    #total = total + element[4]
 
 
 print("Total: ",total)
