@@ -1,3 +1,4 @@
+import pprint as pp
 keepbuying=True
 cart =[]
 total=0
@@ -17,9 +18,6 @@ Cassava= {
     "pokis":[26],
 }
 
-
-
-print (Starbucks.keys())
 
 sucursales=[Starbucks,Cassava]
 nombre_de_sucursal=[tienda["name"] for tienda in sucursales]
@@ -46,7 +44,7 @@ def showStore(store):
             for k,v in tienda1.items():
                 if k !="name":
                     items.append(k)
-
+    print (items)
     return items
 
 def showSizes(store,item):
@@ -56,26 +54,37 @@ def showSizes(store,item):
     output: si hay mas de un tamaño, los muestra, si es único, lo elige automáticamente
     """
     #tomar la longitud del valor del articulo
-    for tienda in sucursales:
-        
     #buscar en cada tienda, como le hicimos en showStore
+    for tienda in sucursales:
+        if store == tienda["name"]:
+            sizes=tienda[item]
 
     #si len(item)==3:
+    if len(sizes)== 3:
         #imprimir "ch, m, g"
+        print("'ch', 'm', 'g'")
+        return [item,("ch","m","g")]
     #si len(item)==2:
+    if len(sizes)== 2:
+        print("'ch', 'g'")
+        return [item,("ch","g")]
         #imprimir "ch, g"
     #si len(item)==1:
+    if len(sizes)== 1:
+        print("Tamaño unico")
+        return [item,("u")]
         #imprimir seleccioar automáticamente
 
+def calculateSubtotal(storeDict,item,tamanio,cantidad):
+    """
+    input: storeDict -> diccionario de la tienda seleccionada
+            item -> string con el nombre del articulo selecccionado
+            tamanio -> int, el indice del tamanio seleccionado
+            cantidad -> int, la cantidad que el usuario nos da
+    output: precio de la orden actual
+    """
+    return storeDict[item][tamanio] *cantidad
 
-def placeOrder(store):
-    """
-    devuelve una lista parecida a:
-    [tienda, item, size, p.unitario, qty, subtotal]
-    """
-    #Validar la tienda
-    findStore(store)
-    #Mostrar cosas de la tiendas
 
 
 
@@ -83,11 +92,38 @@ def placeOrder(store):
 while keepbuying:
     #Preguntar de que tienda estamos ordenando
     tienda= input("De que tienda vas a comprar?")
-    #Preguntar que articulo(s) quiere de esa tienda
-    cosa=input("Que articulo deseas?")
-    #Tamaños
-    # if len()
-    #cantidad
+    store = findStore(tienda)
+    if store:
+        storeDict=sucursales[nombre_de_sucursal.index(store)]
+        articulos=showStore(store)
+        #Preguntar que articulo(s) quiere de esa tienda
+        cosa=input("Que articulo deseas?")
+        # verificar si lo que pide el usuario existe
+        if cosa in articulos:
+            tamanios=showSizes(store,cosa)
+            userSize = input("Que tamanio?")
+            numTamanio = tamanios[1].index(userSize)
+            cantidad = input("Cuantos quieres?")
+            precioUnitario=storeDict[cosa][numTamanio]
+            subtotal=calculateSubtotal(storeDict,cosa,numTamanio,int(cantidad))
+            orden =[tienda, cosa, userSize, precioUnitario,cantidad, subtotal]
 
-    placeOrder(tienda)
-#Algo mas?
+            cart.append(orden)
+            ordenCompleta= input("Desea agregar algo más?(y/n)")
+            if ordenCompleta.lower() in ("n","nel","no", "nelson", "nop"):
+                keepbuying = False
+
+        else:
+            print("articulo invalido, vuelve a intentarlo")
+
+    else:
+        print("tienda invalida, vuelve a intentarlo")
+
+pp.pprint(cart)
+
+for element in cart:
+    print(element)
+    total += element[5]
+
+print("Total: ",total)
+print ("Hasta luego, vuelva pronto, consume mucha cafeina!")
